@@ -1,0 +1,35 @@
+<mujocoinclude>
+    <body childclass="peg_block_base">
+
+<!--      <geom material="peg_block_red" mesh="block_inner" pos="0 0 0.095"/>-->
+<!--      <geom material="peg_block_wood" mesh="block_outer" pos="0 0 0.1"/>-->
+<!--      <geom class="peg_block_col" pos="0 0 0.195" size="0.09 0.1 0.005" type="box" mass="1000"/>-->
+<!--      <geom class="peg_block_col" pos="0 0 0.05" size="0.09 0.096 0.05" type="box" mass="1000"/>-->
+<!--      <geom class="peg_block_col" pos="-0.06 0 0.13" size="0.03 0.096 0.03" type="box" mass="1000"/>-->
+<!--      <geom class="peg_block_col" pos="0.06 0 0.13" size="0.03 0.096 0.03" type="box" mass="1000"/>-->
+<!--      <geom class="peg_block_col" pos="0 0 0.175" size="0.09 0.096 0.015" type="box" mass="1000"/>-->
+<!--      <geom class="peg_block_col" pos="0.095 0 0.1" size="0.005 0.1 0.1" type="box" mass="1000"/>-->
+<!--      <geom class="peg_block_col" pos="-0.095 0 0.1" size="0.005 0.1 0.1" type="box" mass="1000"/>-->
+
+      <geom material="peg_block_wood" mesh="block_outer" pos="0 0 0.1"/>
+<!--  top outer block-->
+      <geom class="peg_block_col" pos="0 0 0.195" size="0.09 0.1 0.005" type="box" mass="1000"/>
+<!--  below the hole-->
+      <geom name="below_of_hole" class="peg_block_col" pos="0 0 0.05" size="0.09 0.096 0.05" type="box" mass="1000" group="0" friction="1 0.005 0.0001" material="peg_block_red"/>
+<!--  left and right of the hole-->
+      <geom name="left_of_hole" class="peg_block_col" pos="-0.06 0 0.13" size="0.03 0.096 0.03" type="box" mass="1000" group="0" friction="1 0.005 0.0001" material="peg_block_red"/>
+      <geom name="right_of_hole" class="peg_block_col" pos="0.06 0 0.13" size="0.03 0.096 0.03" type="box" mass="1000" group="0" friction="1 0.005 0.0001" material="peg_block_red"/>
+<!--  top of the hole-->
+      <geom name="top_of_hole" class="peg_block_col" pos="0 0 0.175" size="0.09 0.096 0.015" type="box" mass="1000" group="0" friction="1 0.005 0.0001" material="peg_block_red"/>
+
+<!--  left and right outer block-->
+      <geom class="peg_block_col" pos="0.095 0 0.1" size="0.005 0.1 0.1" type="box" mass="1000"/>
+      <geom class="peg_block_col" pos="-0.095 0 0.1" size="0.005 0.1 0.1" type="box" mass="1000"/>
+
+      <site name="hole" pos="0 -.096 0.13" size="0.005" rgba="0 0.8 0 1"/>
+      <site name="bottom_right_corner_collision_box_1" pos="0.1 -0.11 0.01" size="0.0001"/>
+      <site name="top_left_corner_collision_box_1" pos="-0.1 -.15 0.096" size="0.0001"/>
+      <site name="bottom_right_corner_collision_box_2" pos="0.1 -0.11 0.16" size="0.0001"/>
+      <site name="top_left_corner_collision_box_2" pos="-0.1 -.17 0.19" size="0.0001"/>
+    </body>
+</mujocoinclude>

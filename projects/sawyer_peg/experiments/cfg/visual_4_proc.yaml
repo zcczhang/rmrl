@@ -1,0 +1,93 @@
+# Config file
+
+tag: "RFRL - visual"
+
+general:
+  num_processes: 4
+  worker_per_device: 1
+  train_gpus: [2]
+  val_processes: 0  # only ckpt
+  validation_tasks: 1
+  testing_gpus: [0,1,2,3]
+  test_processes: 4
+  testing_tasks: 50 # task * processes = 200
+  visualize: false
+  visualize_test: false
+  viz_mode: "obs"
+  viz_fps: 40
+  callback_kwargs:
+    sync: true
+    wandb_project:
+    wandb_entity:
+
+sampler_kwargs:
+  record_during_training: false
+  num_record_processes: 1
+  record_kwargs:
+    mode: debug
+    save: false
+    record_rule:
+      - 31250
+      - 31250
+      - 6
+    fps: 30
+    resolution:
+      - 640
+      - 480
+
+model_kwargs:
+  num_stacked_frames: 1
+  mlp_hidden_dims: [512, 256]
+  low_dim_feature_dim: 512
+  shared_state_encoder: true
+  separate_state_encoder: false
+  critic_condition_action: false
+  use_action_embed: true
+  action_embed_dim: 32  # 32 * 4 = 128
+  squash_output: true
+  orthogonal_init: false
+  rgb_uuid: rgb
+  state_uuid: state
+  visual_encoder: "cnn"
+  single_visual_encoder: true
+  channel_first: true
+  visual_output_size: 512
+  visual_encoder_kwargs:
+    flatten: true
+    output_relu: true
+    output_layer_norm: false
+    layer_channels: [32, 64, 32]
+    kernel_sizes: [8, 4, 3]
+    layers_stride: [4, 2, 1]
+    paddings: [0, 0, 0]
+    dilations: [1, 1, 1]
+    augmentation: random_shift
+    augmentation_kwargs:
+      pad: 4
+      shift_together_if_cat: true
+      same_shift_if_cat: null
+
+
+training_pipeline:
+  lr: 5e-4
+  end_lr: 3.5e-4
+  lr_scheduler: "linear"
+  loss_name: "ppo_loss"
+  loss_steps: 3e6
+  num_steps: 1024
+  training_setting_kwargs:
+    num_mini_batch: 1
+    update_repeats: 20
+    max_grad_norm: 0.5
+    num_steps: ${training_pipeline.num_steps}
+    gamma: 0.99
+    use_gae: true
+    gae_lambda: 0.95
+    advance_scene_rollout_period: null
+    save_interval: 5e5    # TODO 1e5?
+    metric_accumulate_interval: 1
+  loss_kwargs:
+    clip_param: 0.2
+    value_loss_coef: 0.3
+    entropy_coef: 0.01
+    use_clipped_value_loss: true

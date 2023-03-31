@@ -1,0 +1,74 @@
+# Config file
+
+tag: "RFRL - low dim obs"
+
+general:
+  num_processes: 32
+  worker_per_device: 1
+  train_gpus: [0,1]
+  eval_env: "SawyerPeg-v1"
+  validation_gpus: null
+  val_processes: 0  # only ckpt
+  validation_tasks: 1
+  testing_gpus: [0,1,2,3]
+  testing_tasks: 50  # task * processes = 200
+  test_processes: 4
+  visualize: false
+  visualize_test: false
+  viz_mode: "rgb_array"
+  viz_resolution:
+    - 320
+    - 240
+  viz_fps: 40
+  callback_kwargs:
+    sync: true
+    wandb_project:
+    wandb_entity:
+
+sampler_kwargs:
+  record_during_training: false
+  num_record_processes: 3
+  record_kwargs:
+    mode: debug
+    save: false
+    save_path:
+    record_rule:
+      - 62500
+      - 62500
+      - 6
+    fps: 30
+    resolution:
+      - 640
+      - 480
+
+model_kwargs:
+  num_stacked_frames: 4
+  mlp_hidden_dims: [512, 256]
+  shared_state_encoder: true
+  separate_state_encoder: false
+  critic_condition_action: false
+  obs_feature_dim: 512
+
+training_pipeline:
+  lr: 3e-4
+  end_lr: 2e-4
+  lr_scheduler: linear
+  loss_name: "ppo_loss"
+  loss_steps: 3e6
+  num_steps: 300
+  training_setting_kwargs:
+    num_mini_batch: 4
+    update_repeats: 10
+    max_grad_norm: 0.5
+    num_steps: ${training_pipeline.num_steps}
+    gamma: 0.99
+    use_gae: true
+    gae_lambda: 0.95
+    advance_scene_rollout_period: null
+    save_interval: 1e5
+    metric_accumulate_interval: 1
+  loss_kwargs:
+    clip_param: 0.2
+    value_loss_coef: 0.3
+    entropy_coef: 0.01
+    use_clipped_value_loss: True

@@ -1,0 +1,86 @@
+# Config file
+
+tag: "ObjectNav-RoboTHOR-RGB-ClipResNet50GRU-DDPPO"
+
+general:
+  num_processes: 60   # 12 * 5
+  val_processes: 1
+  test_processes: 15
+  worker_per_device: 1
+  headless: false
+  train_gpus: null
+  validation_gpus: null
+  testing_gpus: [0,1,2,3]
+  train_dataset_dir: "datasets/robothor-objectnav/train"
+  validation_dataset_dir: "datasets/robothor-objectnav/val"
+  test_dataset_dir: "datasets/robothor-objectnav/val"
+  validation_tasks: 1
+  testing_tasks: null # all
+  visualize: false
+  visualize_test: false
+  viz_mode: debug # "rgb"
+  viz_class:
+    - video_viz
+#    - base_trajectory
+#    - thor_trajectory
+  viz_fps: 10
+  callback_kwargs:
+    sync: true
+    wandb_project:
+    wandb_entity:
+
+sampler_kwargs:
+  task_args:
+    done_always_terminate: true
+  randomize_materials: false
+  randomize_lightning: false
+  # rewrite in each python experiment config
+  reset_free: false
+  measurement_lead_reset: true
+  measure_method: std
+  num_steps_for_reset: 10000
+
+
+valid_sampler_kwargs:
+  task_args:
+    done_always_terminate: true
+  randomize_materials: false
+  randomize_lightning: false
+  reset_free: false
+
+
+model_kwargs:
+  rgb_resnet_preprocessor_uuid: "rgb_clip_resnet"
+  depth_resnet_preprocessor_uuid: null
+  hidden_size: 512
+  goal_dims: 32
+  num_rnn_layers: 1
+  rnn_type: "GRU"
+  add_prev_actions: false
+  action_embed_size: 6
+
+
+training_pipeline:
+  lr: 3e-4
+  end_lr: 1e-10
+  lr_scheduler: "linear"
+  loss_name: "ppo_loss"
+  loss_steps: 300000000   # or 100 M
+  num_steps: 128
+  training_setting_kwargs:
+    num_mini_batch: 1
+    update_repeats: 4
+    max_grad_norm: 0.5
+    num_steps: ${training_pipeline.num_steps}
+    gamma: 0.99
+    use_gae: true
+    gae_lambda: 0.95
+    advance_scene_rollout_period: null
+    save_interval: 5000000
+    metric_accumulate_interval: 10000
+  loss_kwargs:
+    clip_param: 0.1
+    value_loss_coef: 0.5
+    entropy_coef: 0.01
+    use_clipped_value_loss: true
+    normalize_advantage: true

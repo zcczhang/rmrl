@@ -1,0 +1,31 @@
+ai2thor>=2.5.3
+attrs==22.1.0
+attr==0.3.2
+dm-tree==0.1.7
+einops==0.5.0
+filelock==3.0.12
+ftfy
+hydra-core==1.3.0
+matplotlib==3.3.3
+moviepy==1.0.3
+mujoco-py>=2.1,<2.2
+networkx==2.5
+numpy
+numpy-quaternion
+omegaconf==2.2.3
+opencv_python==4.5.1.48
+pillow==9.2.0
+pyquaternion>=0.9.9
+python-xlib
+regex
+scipy==1.7.3
+setproctitle==1.2.1
+setuptools==63.4.1
+tensorboard==2.10.1
+tensorboardX==2.5.1
+tqdm
+tree==0.2.4
+typing_extensions==4.4
+wandb==0.13.9
+clip @ git+https://github.com/openai/CLIP.git@e184f608c5d5e58165682f7c332c3a8b4c1545f2
+metaworld @ git+https://github.com/Farama-Foundation/Metaworld.git@master#egg=metaworld

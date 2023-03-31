@@ -1,0 +1,130 @@
+# Config file
+
+tag: "Stretch Robot Pick and Place"
+
+general:
+  num_processes: 16
+  val_processes: 0  # only ckpt
+  test_processes: 25
+  worker_per_device: 1
+  headless: false
+  train_gpus: [0,1]
+  validation_gpus: null
+  testing_gpus: [0,1,2,3]
+  train_dataset_dir: null
+  validation_dataset_dir: null
+  test_dataset_dir: null
+  validation_tasks: 1 # 0
+  testing_tasks: 8  # 25 * 8 = 200
+  visualize: false
+  visualize_test: false
+  viz_mode: debug # "rgb"
+  viz_class:
+    - video_viz
+  viz_fps: 10
+#  viz_resolution: [512, 512]
+  callback_kwargs:
+    sync: true
+    output_dir: stretch
+    wandb_project:
+    wandb_entity:
+    callback_sensors:
+#      thor_training_video_callback:
+#        save_path: "training_videos"
+#      thor_point_cloud_callback:
+#        num_steps_recording: 50000
+
+sampler_kwargs:
+  record_during_training: false
+  num_record_processes: 3
+  record_kwargs:  # shared with training video callback
+    record_rule: [-1, 62500, 6]
+    mode: debug
+    save: false
+    fps: 10
+    debug_extra_views: third-view
+  # RF specific settings
+  random_targets: true
+  obj_goal_rate: 0.3
+  two_phase: false
+  irr_measure: true
+  irr_measure_method: std
+  num_steps_for_resets: 10000
+  multi_objects: false
+  fixed_container: true
+  fixed_container_pos_rot: null
+  # env settings
+  spec_env_kwargs:
+    randomize_materials: false
+    randomize_lighting: false
+    # directly teleport in task sampler instead
+    init_teleport_kwargs: null
+    object_open_speed: 0.05
+  # task settings
+  task_args:
+    use_polar_coord_goal: true
+    use_pickup_phase: true
+    no_distractor: true
+    add_debug_metrics: false
+    reward_configs:
+      step_penalty: -0.01
+      failed_action_penalty: -0.03
+      first_picked_up_reward: 1.0
+      arm_dist_multiplier: 1.0
+      obj_dist_multiplier: 1.0
+      goal_success_reward: 10.0
+
+
+valid_sampler_kwargs:
+  spec_env_kwargs:
+    # directly teleport in task sampler instead
+    init_teleport_kwargs: null
+    object_open_speed: 0.05
+    controllable_randomization: true
+#    quality: "Very High"
+  task_args:
+    use_polar_coord_goal: true
+    use_pickup_phase: true
+    no_distractor: true
+    add_topdown_camera: false
+    add_debug_metrics: false
+    reward_configs:
+      step_penalty: -0.01
+      failed_action_penalty: -0.03
+      first_picked_up_reward: 1.0
+      arm_dist_multiplier: 1.0
+      obj_dist_multiplier: 1.0
+      goal_success_reward: 10.0
+
+model_kwargs:
+  num_stacked_frames: null
+  mlp_hidden_dims: null
+  low_dim_feature_dim: 512 # 512
+  goal_embed_dims: 512  # 512 for prompt 32 for goal embedding
+  shared_state_encoder: true
+
+
+training_pipeline:
+  lr: 3e-4 # 5e-4
+  end_lr: 2e-4 # 3.5e-4
+  lr_scheduler: "linear"
+  loss_name: "ppo_loss"
+  loss_steps: 5000000   # 5M
+  num_steps: 200
+  training_setting_kwargs:
+    num_mini_batch: 4
+    update_repeats: 10
+    max_grad_norm: 0.5
+    num_steps: ${training_pipeline.num_steps}
+    gamma: 0.99
+    use_gae: true
+    gae_lambda: 0.95
+    advance_scene_rollout_period: null
+    save_interval: 125000   # 125k
+    metric_accumulate_interval: 1
+  loss_kwargs:
+    clip_param: 0.1 # 0.2
+    value_loss_coef: 0.5 # 0.3
+    entropy_coef: 0.01
+    use_clipped_value_loss: true
+    normalize_advantage: true
