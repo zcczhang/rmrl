@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>When Learning Is Out of Reach, Reset: Generalization in Autonomous Visuomotor Reinforcement Learning</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="./static/css/academicons.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      extensions: ["tex2jax.js"],
+      "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] },
+      tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], displayMath: [ ["$$","$$"], ["\\[", "\\]"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno" },
+      TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } } },
+      messageStyle: "none"
+    });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js"></script>
+
+</head>
+<body>
+
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                    <h1 class="title is-1 publication-title" style="width: 3000px; text-align: center;">
+                        When Learning Is Out of Reach, Reset: <br> Generalization in Autonomous Visuomotor Reinforcement Learning
+                    </h1>
+                    <div class="is-size-4 publication-authors">
+                        <span class="author-block">
+                            <a target="_blank" href="https://zcczhang.github.io/">Zichen&#160;"Charles"&#160;Zhang</a>,
+                            <a target="_blank" href="https://lucaweihs.github.io">Luca&#160;Weihs</a>
+                        </span>
+                    </div>
+
+                    <div class="is-size-4 publication-authors">
+                        <span class="author-block">PRIOR @ Allen Institute for AI</span>
+                    </div>
+
+                    <div class="column has-text-centered">
+                        <div class="publication-links">
+                            <span class="link-block">
+                                <span class="link-block">
+                                    <a target="_blank" href="http://arxiv.org/abs/2303.17600"
+                                       class="external-link button is-medium is-rounded">
+                                      <span class="icon">
+                                          <i class="ai ai-arxiv"></i>
+                                      </span>
+                                      <span>arXiv</span>
+                                    </a>
+                                </span>
+                                &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a target="_blank" href="assets/paper.pdf"
+                                   class="external-link button is-medium is-rounded">
+                                  <span class="icon">
+                                      <i class="fas fa-file-pdf"></i>
+                                  </span>
+                                  <span>PDF</span   >
+                                </a>
+                            </span>
+                            &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="link-block">
+                            <a target="_blank" href=""
+                               class="external-link button is-medium is-rounded">
+                              <span class="icon">
+                                  <i class="fab fa-github"></i>
+                              </span>
+                              <span>Code (Coming Soon)</span>
+                            </a>
+                          </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-widescreen">
+        <div class="rows">
+            <div class="rows is-centered ">
+                <div class="row is-full-width">
+                    <img src="assets/images/teaser.jpg" class="interpolation-image"
+                         alt="" style="display: block; margin-left: auto; margin-right: auto; margin-top: -8%"/>
+                    <span style="font-size: 110%">
+                        <b>Episodic, Reset-Free, and Reset-Minimizing RL.</b>
+                        In standard (i.e. episodic) reinforcement learning (RL) agents have their environments reset
+                        after every success or failure, an expensive operation in the real world. In Reset-Free RL
+                        (RF-RL), researchers have designed "reset games" which allow for learning so long as special
+                        care is taken to avoid irreversible transitions (e.g. an apple falling out of reach). We
+                        consider Reset-Minimizing RL (RM-RL) where in realistic and dynamic environments agents may
+                        request human interventions but should minimize these requests.
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+            <div class="column">
+                <h2 class="title is-3" style="margin-top:-5%">Abstract</h2>
+                <div class="content has-text-justified">
+                    <p style="font-size: 125%;">
+                        &nbsp; &nbsp;&nbsp;&nbsp; Episodic training, where an agent's environment is reset to some initial condition after every success or failure,
+                        is the de facto standard when training embodied reinforcement learning (RL) agents. The underlying assumption that the
+                        environment can be easily reset is limiting both practically, as resets generally require human effort in the real world
+                        and can be computationally expensive in simulation, and philosophically, as we'd expect intelligent agents to be able to
+                        continuously learn without external intervention. Work in learning without any resets, i.e. Reset-Free RL (RF-RL),
+                        is very promising but is plagued by the problem of irreversible transitions (e.g. an object breaking or falling out of reach)
+                        which halt learning. Moreover, the limited state diversity and instrument setup encountered during RF-RL means that works
+                        studying RF-RL largely do not require their models to generalize to new environments. <br>
+                        &nbsp; &nbsp;&nbsp;&nbsp;In this work, we instead look to minimize, rather than completely eliminate, resets while building visual agents that can meaningfully
+                        generalize. As studying generalization has previously not been a focus of benchmarks designed for RF-RL, we propose a new
+                        Stretch Pick-and-Place (<span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span>) benchmark
+                        designed for evaluating generalizations across goals, cosmetic variations, and structural changes.
+                        Moreover, towards building performant reset-minimizing RL agents, we propose unsupervised metrics to detect irreversible
+                        transitions and a single-policy training mechanism to enable generalization. Our proposed approach significantly
+                        outperforms prior episodic, reset-free, and reset-minimizing approaches achieving higher success rates with fewer
+                        resets in <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span> and another popular RF-RL benchmark. Finally, we find that
+                        our proposed approach can dramatically reduce the number of resets required for training other embodied tasks,
+                        in particular for RoboTHOR ObjectNav we obtain higher success rates than episodic approaches using 99.97% fewer resets.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--benchmark-->
+<section class="section">
+    <div class="container is-max-widescreen">
+        <div class="rows">
+            <div class="rows is-centered ">
+                <div class="row is-full-width">
+                    <h2 class="title is-3"><span
+                            class="drmrl">Benchmarks</span></h2>
+                    <video poster="" autoplay controls muted loop height="100%" style="margin-top:-2%">
+                        <source src="assets/videos/benchmark_video.mp4"
+                                type="video/mp4">
+                    </video>
+                    <span style="font-size: 110%">
+                    <span style="font-weight: bold">Overview of proposed <span style="font-variant: small-caps;font-size: 110%">Stretch-P&P</span> and other experiment environments.</span>
+                        Here we show the training and evaluation configurations for our <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span>, Sawyer Peg,
+                        and RoboTHOR ObjectNav tasks (from left to right). During training (blue panels), the agent observes:
+                        (<span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span>) as few one household object and one container depending on allowed object budget,
+                        (Sawyer Peg) exactly one type of stationary box with a goal hole at its upper center,
+                        and (ObjectNav) a limited set of house structures. During evaluation (yellow panels),
+                        we require the agent to generalize to: (<span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span>) novel cosmetic changes, novel object instances,
+                        and a combination of the above alongside with other cosmetic and structural background changes,
+                        (Sawyer Peg) novel box and hole positions (the hole position is highlight with green here only
+                        for visualization purposes), and (ObjectNav) fully unseen house structures.
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!--Method-->
+<section class="section">
+    <div class="container is-max-widescreen">
+        <div class="rows">
+            <div class="rows is-centered ">
+                <div class="row is-full-width">
+                    <h2 class="title is-3"><span
+                            class="drmrl">Methods</span></h2>
+
+                    <p style="font-size: 120%">
+                        Two fundamental problems when attempting to build generalizable agents in the reset-free setting
+                        are <b>irreversible transitions</b> and <b>limited state diversity</b>. As it is often impractical or impossible
+                        to guarantee that an agent does not undergo any irreversible transitions during training, we
+                        present <b><i>measures</i></b> that we use to quantify when an agent has
+                        undergone such a transition. Next, we take a
+                        first step towards building generalizable RM-RL agents; in particular, we propose to do away with
+                        the learned forward-backward policies popular in prior RF-RF work and, instead, learn a <b><i>single</i></b>
+                        policy which is presented with randomly generated goals during training.
+                    </p>
+
+                    <br>
+
+                    <h3 class="title is-4"><span
+                            class="drmrl">Existence of Near Irreversible States</span></h3>
+                    <p style="font-size: 120%">
+                        Some irreversible transitions are explicit, e.g. a glass is dropped and shatters.
+                        However, in a more complex real-world environment, they may be more subtle. For instance,
+                        when a robot is tasked with cleaning a room, it may encounter situations where some
+                        trash is accidentally pushed or blown into hard-to-reach locations, such as under a sofa or
+                        in the corners of the room. In such cases, the robot may find it challenging, but not strictly
+                        impossible, to pick up or sweep debris back using its regular cleaning tools. We refer to these
+                        states that are difficult, but not impossible, to recover from as near-irreversible (NI) states.
+                        <br>
+                    </p>
+                    <img src="assets/images/stretch_irr.jpg" class="interpolation-image"
+                         alt="" style="display: block; margin-left: auto; margin-right: auto"/>
+                    <span style="font-size: 110%">
+                        <span style="font-weight: bold">Reversible and (Near) Irreversible States in <span style="font-variant: small-caps;font-size: 110%">Stretch-P&P</span></span>.
+                        <i>Left:</i> Reversible (top right): the target apple is within easy reaching distance.
+                        Irreversible (bottom right): the apple has fallen off the table, as the agent cannot rotate
+                        in <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span> the apple can no longer be reached. Near-irreversible (left):
+                        the apple is in tricky-to-reach locations being behind other objects or at the extreme
+                        limits of the arm's reaching capabilities.
+                        <i>Right:</i> Visualizing successful and failed object trajectories in <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span> during training. Notice that
+                            the object occupies many diverse states and can fall off of the table or roll away from the agent.
+                    </span>
+
+                    <br>
+
+                    <img src="assets/images/sp_irr.jpg" class="interpolation-image"
+                         alt="" style="display: block; margin-left: auto; margin-right: auto"/>
+
+                    <br>
+
+                    <span style="font-size: 110%">
+                        <span style="font-weight: bold">Reversible and (Near) Irreversible States in Sawyer Peg.</span>
+                        Point cloud visualizations for evaluations on the narrower and the normal-sized table,
+                        where red points indicate the object (peg) head positions for failed trajectories while greens
+                        show the successful ones. Evaluations on two settings have the exact the same performance and
+                        rollouts trajectories for the final checkpoint (last two figures), but the same policy is leading
+                        to different consequences for the evaluation at 300k steps (first two figures):
+                        the peg always drops off the narrower table but mostly is still on the edge of the normal-size table.
+                    </span>
+
+                    <br>
+                    <br>
+
+                    <h3 class="title is-4"><span
+                            class="drmrl">Measures of Irreversibility </span>
+                    </h3>
+                    <p style="font-size: 120%">
+                        Suppose that agent has taken $t$ steps producing the trajectory $\mathcal{T}_{t}=\{\tau_\pi(0), \ldots, \tau_\pi(t)\}$.
+                        Intuitively, undergoing an NI transition should correspond to a <b>decrease</b> in the degrees of freedom available
+                        to the agent to manipulate its environment: that is, if an agent underwent an NI transition at timestep $i$ then
+                        the diversity of states $\tau_{\pi}(i+1),\ldots, \tau_{\pi}(t)$ should be small compared to the diversity before
+                        undergoing the irreversible transition. Further, the set of near-irreversible states also depends on the agent's
+                        policy $\pi$: which states should be considered near-irreversible can, and should, change during training.
+                        To formalize this, we can compute the above count, which we call $\phi_{W,\alpha,d,}(\mathcal{T}_t)$, as
+                        \[
+                            \max_{(i_0, \ldots, i_m)\in P(t)}\sum_{j=0}^{m-1}1_{[i_{j+1}-i_{j} \geq N]}
+                            \cdot 1_{\{ d\left(\tau_\pi(i_j), \ldots, \tau_\pi(i_{j+1}-1)\right) < \alpha\}}
+                        \]
+                        where $d:\mathcal{S}^H\to \mathbb{R}_{\geq0}$ is some non-negative measure of diversity among states.
+                        As $\phi_{W,\alpha,d}$ is a counting function, we can turn it into a decision function simply by
+                        picking some count $N>0$ and deciding to reset when $\phi_{W,\alpha,d}\geq N$. In particular,
+                        we will let $\Phi_{W,N,\alpha,d}$ be the function that equals 1 if and only if $\phi_{W,\alpha,d}\geq N$.
+                        In our experiments we evaluate several diversity measures $d(s_1,\ldots, s_H)$ including:
+                        (1) a dispersion-based method using an empirical measure of entropy, or the mean standard deviation of the $s_i$,
+                        (2) a distance-based method using euclidean distance, or dynamic time warping (DTW).
+                        While we find surprisingly robust performance when varying $d$, we expect that there is no single best choice of diversity measure for all tasks.
+                        See our paper for more details.
+                    </p>
+
+                    <br>
+                    <br>
+
+                    <h3 class="title is-4"><span
+                            class="drmrl">RM-RF with a Single Policy</span>
+                    </h3>
+                    <p style="font-size: 120%">
+                        We aim to use single policy to achieve RM-RL that can adapt to general
+                        embodied tasks. Recall the objective for goal-conditioned POMDP in traditional episodic RL:
+                        \[\pi^\star \arg\max_\pi J(\pi\mid g) = \arg\max_\pi \mathbb{E}\left[\sum_{t=0} ^ \infty \gamma^t r(s_t, a_t\mid g)\right]\]
+
+                        In FB-RL, the ``forward'' goal space is normally defined as a singleton
+                        $\mathcal{G}_{f} = \{g^\star\}$ for the target task goal $g^\star$ (e.g. the apple is on the plate,
+                        the peg is inserted into the hole, \etc). The goal space for ``backward'' phase is then the (generally limited)
+                        initial state space $\mathcal{G}_{b} = \mathcal{I} \subset \mathcal{S}$ such that $\mathcal{G}_f\cap \mathcal{G}_b=\emptyset$.
+                        As the goal spaces in FB-RL are disjoint and asymmetric, it is standard for separate forward/backward
+                        policies (with separate parameters) and even different learning objectives to be used when training
+                        FB-RL agents. In our setting, however, there is only a single goal space which, in principle, equals
+                        the entire state space excluding the states we detect as being NI
+                        (\ie, $\mathcal{G} = \mathcal{S} \setminus \{s_t\mid s_t\in\tau_{\pi} (t) \in \mathcal{T}_\pi, \Phi_{W,N,\alpha,d} (\mathcal{T}_\pi) = 1\}$).
+                        In our training setting, we call each period between goal switches a \textit{phase} and, when
+                        formulating our learning objectives, treat these phases as separate "episodes" in episodic approaches.
+
+<!--                        In FB-RL setting, the forward goal space is normally defined as the singleton-->
+<!--                        $\mathcal{G}_{f} = \{g^\star\}$ for the target task goal $g^\star$ (e.g. the apple is on the plate,-->
+<!--                        the peg is inserted into the hole, etc), where the goal space for backward phase is exactly-->
+<!--                        the (limited set of) initial state space $\mathcal{G}_{b} = \mathcal{I} \subset \mathcal{S}$. Empirically,-->
+<!--                        those initial states are pre-defined and discriminated in previous work such that the deployed-->
+<!--                        $\mathcal{G}_f$ and $\mathcal{G}_b$ are disjoint. Then it is reasonable to use separate policies-->
+<!--                        and objectives to optimize alternatively during the training. However, as in our setting,-->
+<!--                        by simply given $\mathcal{G} = \mathcal{S} \setminus \{s_t\mid s_t\in\tau_{\pi} (t) \in \mathcal{T}_\pi, \Phi_{W,N,\alpha,d, \pi} (\mathcal{T}_\pi) = 1\}$-->
+<!--                        which is represented as the entire state space excluding the NI states we formalized above given-->
+<!--                        the current $\pi$ during training, we can make the analogue of each <i>phase</i>-->
+<!--                        in our autonomous RM-RL setting and using the <b>same</b> objective as an episode noted in episodic RL.-->
+
+<!--                        where denoting a <i>phase$_i$</i> with states trajectory $\{s^i_0, \cdots, s^i_H\}$ as-->
+<!--                        an $i^{th}$ episode with state $s^i_t \in \mathcal{S}$ at timestep $t$, finite horizon $H_i$, and-->
+<!--                        goal $g_i\in \mathcal{G}$ such that $s^i_H=s^{i+1}_0$, i.e. the last state of the $i^{th}$-->
+<!--                        phase is identical to the initial state of the $(i+1)^{th}$ phase. Therefore, we can directly-->
+<!--                        use the same objective with switching goals without a reset, where a reset thereby can be-->
+<!--                        simply defined as an intervention such that $s^i_H\neq s^{i+1}_0$.-->
+                        <br>
+                        In our RM-RL setting, we aim for evaluating <b><i>both</i></b> the sample efficiency and intervention
+                        efficiency such that an agent or algorithm is considered as parfait with less training steps and human supervisions,
+                        i.e. minimize both:
+                        \[
+                            \sum_{t=0}^\infty J(\pi^\star) - J(\pi^\pi_t), \sum_{k=0}^\infty J(\pi^\star) - J(\pi^\pi_k)
+                        \]
+                        where $\pi_t, \pi_k$ are the policy learned after $t$ steps and $k$ interventions respectively, while also with meaningful generalizations.
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!--Experiments-->
+<section class="section">
+    <div class="container is-max-widescreen">
+        <div class="rows">
+            <div class="rows is-centered ">
+                <div class="row is-full-width">
+                    <h2 class="title is-3">
+                        <span class="drmrl">Experiments</span>
+                    </h2>
+                    <p style="font-size: 125%">
+                       We consider the following three classes of baseline training strategies.
+                    <ul style="font-size: 125%; padding-left: 1%">
+                    <li>
+                        (1) <b>Ours (Random $+$ NI Measure)</b>. Our method using our single-policy random-target training strategy with resets being requested based on our unsupervised irreversibility measure.
+                    </li>
+                    <li>
+                        (2) <b>Periodical resets ($+$ random goals)</b>. Perhaps the simplest strategy for deciding
+                        when to request resets. Our periodical resets baselines do precisely this and are labeled
+                        simply as ``$N$ steps/reset`` where $N$ is some positive integer; here $N$ is set to generally be somewhat (or much) larger than in the standard episodic setting.
+                        Note that, in principle, there are no irreversible states in ObjectNav as the task merely
+                        involves navigating around an, otherwise static, environment. For this reason, we also include
+                        a baseline trained without any resets beyond those used to initialize the environment, i.e. $N=\infty$,
+                        and a baseline trained in the episodic setting just as in prior work
+                    </li>
+                    <li>
+                        (3) <b>FBRL $+$ GT</b>. Here we implement the popular two-policy forward-backward training strategy in existing work.
+                        Inspired by  <a href="https://sites.google.com/view/proactive-interventions/">PAINT</a>, which learns a classifier trained on ground-truth irreversibility labels to request resets,
+                        we will use an <i>oracle</i> version of this method and reset the environment whenever the agent enters one of a fixed collection
+                        of hand-labeled irreversible states (e.g. target object has fallen off the table).
+                    </li>
+                    </ul>
+                    </p>
+
+                    <br>
+                    <br>
+
+                    <h3 class="title is-4">
+                        <span class="drmrl">Evaluation Results
+                        </span>
+                    </h3>
+                    <p style="font-size: 125%">
+                    In our experiments, we look to answer a number of questions related to:
+                    <ul style="font-size: 125%; padding-left: 1%">
+                    <li>
+<!--                    (1) How important are resets for learning?-->
+                        (1) the importance of resets for learning
+                    </li>
+                    <li>
+                        (2) the efficacy of our proposed methodological contributions
+                        (unsupervised irreversibility detection and single-policy RM-RF)
+                        in reducing the number of resets required for learning and enabling
+                        out-of-distribution generalization
+                    </li>
+                    <li>
+                        (3) how our methods may be applied more generally to existing embodied tasks
+                    </li>
+                    <li>
+                        (4) How does performance vary using different measures and budgets
+                    </li>
+                    </ul>
+                    </p>
+
+                    <br>
+
+                    <h5 class="title is-5">
+                        <span class="drmrl" style="font-variant: small-caps;font-size: 110%"><i>Stretch-P&P</i></span>
+                    </h5>
+
+                    <div style="display: flex; align-items: center;">
+                          <span style="font-size: 110%; flex-grow: 1;">
+                            <span> We show the training performance of our method versus other competing baselines in <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span>  with the budget $=1$.
+                                We see that our method is far more efficient in its use of resets:
+                                it achieves high success rates more consistently and with far fewer resets than
+                                the periodical reset models.
+                                Our method is also more efficient in terms of training steps.
+                                This suggests that our measure metric can consistently and accurately identify time-points where a reset will be highly <b><i>valuable</i></b> for learning.
+                            </span></span>
+                          <img src="assets/images/stretch_method_extend_training.jpg" class="interpolation-image"
+                               alt="" style="display: block; margin-left: 30pt; margin-right: 0; flex-shrink: 0; max-width: 45%;"/>
+                    </div>
+
+                    <br>
+
+                    <img src="assets/images/stretch_method_subsample.jpg" class="interpolation-image"
+                         alt="" style="display: block; margin-left: auto; margin-right: auto"/>
+                    <br>
+                    <span style="font-size: 110%">
+                        <span style="font-weight: bold">Method Comparisons for <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span></span>.
+                        Evaluation results for testing different facets of agent generalization proposed in Benchmark section:
+                        Position out-of-distribution (<span style="font-variant: small-caps;font-size: 110%">Pos-OoD</span>),
+                        Visual out-of-distribution (<span style="font-variant: small-caps;font-size: 110%">Vis-OoD</span>),
+                        Object out-of-distribution (<span style="font-variant: small-caps;font-size: 110%">Obj-OoD</span>), and
+                        All out-of-distribution (<span style="font-variant: small-caps;font-size: 110%">Obj-OoD</span>).
+                    </span>
+
+                    <br><br>
+
+
+                    <br>
+
+                    <h5 class="title is-5">
+                        <span class="drmrl"><i>Sawyer Peg</i></span>
+                    </h5>
+
+                    <img src="assets/images/sawyer_peg_method_comp.jpg" class="interpolation-image"
+                         alt="" style="display: block; margin-left: auto; margin-right: auto"/>
+                    <span style="font-size: 110%">
+                        <span style="font-weight: bold">Method Comparisons for Sawyer Peg</span>.
+                        In Sawyer Peg, we also observe the performance drop for FB-RL as shown in the bottom row of Figure above,
+                        which is somewhat smaller than results for <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span>, we attribute this to the smaller state space of Sawyer Peg which makes generalization somewhat easier.
+                    </span>
+
+
+                    <br><br>
+
+                    <h5 class="title is-5">
+                        <span class="drmrl"><i>ObjectNav</i></span>
+                    </h5>
+
+                    <div style="display:flex; flex-direction:row;">
+                        <div style="flex:3; padding-right:20px; padding-top:20px;">
+                            <img src="assets/images/objnav_train.jpg" class="interpolation-image" alt="" style="display:block; margin:auto; max-width: 110%;"/>
+                        </div>
+                      <div style="flex:8; padding-right:0px; padding-left:50px;">
+                        <style>
+                            table {
+                                text-align: center;
+                                font-size: 100%;
+                                border-collapse: collapse;
+                                width: 100%;
+                            }
+                            th, td {
+                                text-align: center;
+                                padding: 12px;
+                            }
+                            th {
+                                font-weight: bold;
+                                border-bottom: 2px solid black;
+                            }
+                            tr:nth-child(even) {
+                                background-color: #f2f2f2;
+                            }
+                        </style>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+<!--                                    <th>Success <br>($50$M)</th>-->
+<!--                                    <th>SPL <br>($50$M)</th>-->
+<!--                                    <th>Resets <br>($50$M)</th>-->
+<!--                                    <th>Success <br>($100$M)</th>-->
+<!--                                    <th>SPL <br>($100$M)</th>-->
+<!--                                    <th>Resets <br>($100$M)</th>-->
+                                    <th>Success ($50$M)</th>
+                                    <th>SPL ($50$M)</th>
+                                    <th>Resets ($50$M)</th>
+                                    <th>Success ($100$M)</th>
+                                    <th>SPL ($100$M)</th>
+                                    <th>Resets ($100$M)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ours</td>
+                                    <td>0.216</td>
+                                    <td>0.131</td>
+                                    <td><b>592 </b></td>
+                                    <td><b>0.551</b></td>
+                                    <td><b>0.275</b></td>
+                                    <td><b>635</b></td>
+                                </tr>
+                                <tr>
+                                    <td>H=300</td>
+                                    <td>0.334</td>
+                                    <td>0.166</td>
+                                    <td>24k</td>
+                                    <td>0.355</td>
+                                    <td>0.167</td>
+                                    <td>1M</td>
+                                </tr>
+                                <tr>
+                                    <td>H=10k</td>
+                                    <td>0.246</td>
+                                    <td>0.134</td>
+                                    <td>5k</td>
+                                    <td>0.418</td>
+                                    <td>0.218</td>
+                                    <td>10k</td>
+                                </tr>
+                                <tr>
+                                    <td>H=$\infty$</td>
+                                    <td>0.206</td>
+                                    <td>0.141</td>
+                                    <td><b>60</b></td>
+                                    <td>0.339</td>
+                                    <td>0.178</td>
+                                    <td><b>60</b></td>
+                                </tr>
+                                <tr>
+                                    <td><a href="https://arxiv.org/abs/2111.09888">EmbCLIP</a></td>
+                                    <td><b>0.431 </b></td>
+                                    <td><b>0.204</b></td>
+                                    <td>1M</td>
+                                    <td>0.504</td>
+                                    <td>0.234</td>
+                                    <td>2M</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <br>
+                    <span style="font-size: 110%">
+                        <span style="font-weight: bold">Method Comparisons for RoboTHOR ObjectNav</span>.
+                        We show our initial results of training curve (<i>left</i>) and evaluation table (<i>right</i>)
+                        for ObjectNav task in autonomous RL. After 100M
+                        steps with only 635 resets we are able to achieve success
+                        rates higher than all competing baselines despite the next
+                        best performing baseline using 2M resets.
+                    </span>
+
+                    <br> <br>
+
+                    <h5 class="title is-5">
+                        <span class="drmrl"><i>Ablation on Measurements and Budgets</i></span>
+                    </h5>
+
+                    <img src="assets/images/stretch_measure_ablation.jpg" class="interpolation-image"
+                         alt="" style="display: block; margin-left: auto; margin-right: auto"/>
+                    <br>
+                    <span style="font-size: 110%">
+                        <span style="font-weight: bold"> <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span> Irreversibility measurements & object budgets ablations.</span>
+                        Our measurement-determined irreversibility intervention method is relatively robust to the selection of diversity measure (dispersion-based:
+                        <span style="font-variant: small-caps;font-size: 110%">Std</span>, <span style="font-variant: small-caps;font-size: 110%">Ent</span>, and distance-based:
+                        <span style="font-variant: small-caps;font-size: 110%">L2</span>, <span style="font-variant: small-caps;font-size: 110%">Dtw</span>).
+                        Interestingly, using an object budget 2 or 4 results in lower performance compared to when using a budget of 1, while providing slightly better with unseen object and scenes.
+                    </span>
+
+                    <br><br><br>
+
+                    <img src="assets/images/sawyer_peg_measure_ablation.jpg" class="interpolation-image"
+                         alt="" style="display: block; margin-left: auto; margin-right: auto; max-width: 60%;"/>
+                    <br>
+                    <span style="font-size: 110%">
+                        <span style="font-weight: bold"> Sawyer Peg Irreversibility measurements ablations.</span>
+                        Similarly as <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span>,
+                        our measurement-determined irreversibility intervention method is relatively robust to the selection of diversity measure.
+                        <b>All</b> of our proposed baselines achieve consistently high performance in
+                        the training, in-domain evaluation, and novel box evaluation. Moreover, they achieve this high performance within
+                        <b>$\approx$100 resets</b> in total and converge in around <b>1M steps</b>.
+                    </span>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!--Conclusion-->
+<section class="section">
+    <div class="container is-max-widescreen">
+        <div class="rows">
+            <div class="rows is-centered ">
+                <div class="row is-full-width">
+                    <h2 class="title is-3"><span
+                            class="drmrl">Conclusion</span></h2>
+
+                    <p style="font-size: 125%">
+                        In this work we study the problem of training Reset-Minimizing Reinforcement Learning (RM-RL) agents within visually
+                        complex environments which can generalize to novel cosmetic and structural changes during evaluation.
+                        We design the <span style="font-variant: small-caps;font-size: 110%">S<b>tretch</b>-P&P</span> benchmark to study this problem and find that
+                        two methodological contributions, unsupervised irreversible transition detection and a single-policy
+                        random-goal training strategy, allow agents to learn with fewer resets and better generalize than competing baselines.
+                        In future work we look to further explore the implications of our irreversible transition detection methods
+                        for improving RM-RL methods and for building models that can ask for help during evaluation.
+                        We also leave the space for design and balancing of how to penalize visits to unexpected NI states
+                        (with labels provided by our method), which may potentially conflict with encouraging exploration, as future work.
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+    <div class="container is-max-widescreen content">
+        <h2 class="title">BibTeX</h2>
+        <pre><code>@article{zhang2023when,
+  title   = {When Learning Is Out of Reach, Reset: Generalization in Autonomous Visuomotor Reinforcement Learning},
+  author  = {Zichen Zhang and Luca Weihs},
+  year    = {2023},
+  journal = {arXiv preprint arXiv: Arxiv-2303.17600},
+}</code></pre>
+    </div>
+</section>
+
+<p style="display:none">
+    <script type="text/javascript" id="clustrmaps" src="//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=300&t=tt&d=0M5jkJJMAykEJRR9e9wqjO952woKt2r-kNO_b7zSf0w&co=2d78ad&cmo=3acc3a&cmn=ff5353&ct=ffffff"></script>
+</p>
+
+<footer class="footer">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column">
+                <div class="content has-text-centered">
+                    <p>
+                        Website template borrowed from <a
+                            href="https://github.com/nerfies/nerfies.github.io">NeRFies</a> and <a
+                            href="https://github.com/cliport/cliport.github.io">CLIPort</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
